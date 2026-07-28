@@ -63,12 +63,21 @@ void loop() {
     Serial.print("Raw Value : ");
     Serial.println(raw);
 
-    int level = map(raw, 0, 4095, 0, 100);
+    if (raw < 100 || raw > 4000) {
 
-    if (level < 0 || level > 100) {
-      Serial.println("Invalid Sensor Reading");
+      Serial.println("SENSOR FAULT");
+      Serial.println("Impossible Sensor Reading");
+
+      digitalWrite(redLED, HIGH);
+      digitalWrite(greenLED, LOW);
+
+      tone(buzzer, 1500);
+
+      Serial.println("----------------------------");
       return;
     }
+
+    int level = map(raw, 0, 4095, 0, 100);
 
     samples[sampleIndex] = level;
     sampleIndex = (sampleIndex + 1) % 5;
@@ -84,6 +93,15 @@ void loop() {
     Serial.print("Water Level : ");
     Serial.print(average);
     Serial.println("%");
+
+    int difference = 0;
+
+    if (lastAverage != -1) {
+      difference = abs(average - lastAverage);
+    }
+
+    Serial.print("Difference from Previous Reading : ");
+    Serial.println(difference);
 
     if (abs(average - lastAverage) <= 1)
       sameCount++;
@@ -101,8 +119,7 @@ void loop() {
 
       tone(buzzer, 1500);
 
-      Serial.println();
-
+      Serial.println("----------------------------");
       return;
     }
 
@@ -167,8 +184,10 @@ void loop() {
 
       Serial.println("Network Down");
 
-      storedData[storeIndex] = "Stored Water Level : " + String(average) + "%";
-      storeIndex++;
+      if (storeIndex < 20) {
+        storedData[storeIndex] = "Stored Water Level : " + String(average) + "%";
+        storeIndex++;
+      }
 
       Serial.println("Reading Stored");
     }
