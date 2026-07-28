@@ -62,6 +62,11 @@ To build an ESP32-based water tank monitoring system that:
 - Store-and-forward data simulation
 - Non-blocking timing using millis()
 
+- ## New SIH Level 2 Features
+
+- Displays Difference from Previous Water Level Reading.
+- Detects impossible sensor values and reports Sensor Fault instead of triggering false alarms.
+
 ---
 
 ## How to Run
